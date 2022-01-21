@@ -63,6 +63,7 @@ int _main (void)
    APP_LOG_INFO ("Network interfaces:   %s\n", app_args.eth_interfaces);
    APP_LOG_INFO ("Default station name: %s\n", app_args.station_name);
 
+   //在此函数中,挂载用户定义的所有callback回调函数.
    app_pnet_cfg_init_default (&pnet_cfg);
 
    /* Note: station name is defined by app_gsdml.h */

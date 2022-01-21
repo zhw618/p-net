@@ -1,0 +1,3 @@
+repository='https://github.com/rtlabs-com/osal.git'
+module=''
+tag='origin'

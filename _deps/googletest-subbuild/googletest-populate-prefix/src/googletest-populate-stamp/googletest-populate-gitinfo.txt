@@ -1,0 +1,3 @@
+repository='https://github.com/rtlabs-com/googletest.git'
+module=''
+tag='origin'
