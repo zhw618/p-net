@@ -1436,6 +1436,7 @@ static void app_handle_demo_pnet_api (app_data_t * app)
    }
 }
 
+//sampleapp中各个回调函数的配置,若为optional可配置为null
 void app_pnet_cfg_init_default (pnet_cfg_t * pnet_cfg)
 {
    app_utils_pnet_cfg_init_default (pnet_cfg);
