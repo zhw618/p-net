@@ -136,16 +136,17 @@ bool app_get_button (uint16_t id);
 
 /**
  * 从HwModuleConfig.json文件中读入json内容,
- * 根据slot和subslot查找json中的硬件配置对应mod_id/submod_id
+ * 根据slot和subslot查找json中配置的硬件hw_mod_id和hw_mod_name
  * 注意: 若json中未配置硬件模块, hw_mod_id输出为0.
  *
- * @param slot       In: slot号
- * @param subslot    In: subslot号. 若非submodule,则此值传入0值(subslot从1开始数)
- * @param hw_mod_id  Out: module_id 或 submodule_id, 若为Empty模块则值为0
+ * @param slot           In: slot号
+ * @param subslot        In: subslot号. 若非submodule,则此值传入0值(subslot从1开始数)
+ * @param hw_mod_id      Out: module_id 或 submodule_id, 若为Empty模块则值为0
+ * @param hw_mod_name    Out: module_name 或submodule_name, 若为Empty模块则值为"Empty Mod/SubMod"
  * @return 0 if success and -1 for error
  */
 int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot, 
-                                uint32_t* hw_mod_id );
+                                uint32_t* hw_mod_id, char* hw_mod_name);
 
 #ifdef __cplusplus
 }

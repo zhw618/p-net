@@ -195,21 +195,18 @@ static void app_set_outputs_default_value (void)
 
 /**
  * 从HwModuleConfig.json文件中读入json内容,
- * 根据slot和subslot查找json中的硬件配置对应mod_id/submod_id
+ * 根据slot和subslot查找json中配置的硬件hw_mod_id和hw_mod_name
  * 注意: 若json中未配置硬件模块, hw_mod_id输出为0.
  *
- * @param slot       In: slot号
- * @param subslot    In: subslot号. 若非submodule,则此值传入0值(subslot从1开始数)
- * @param hw_mod_id  Out: module_id 或 submodule_id, 若为Empty模块则值为0
+ * @param slot           In: slot号
+ * @param subslot        In: subslot号. 若非submodule,则此值传入0值(subslot从1开始数)
+ * @param hw_mod_id      Out: module_id 或 submodule_id, 若为Empty模块则值为0
+ * @param hw_mod_name    Out: module_name 或submodule_name, 若为Empty模块则值为"Empty Mod/SubMod"
  * @return 0 if success and -1 for error
  */
 int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot, 
-                                uint32_t* mod_id)
+                                uint32_t* hw_mod_id, char* hw_mod_name)
 {
-   //输出值 初始化
-   (* mod_id) = 0;
-   //strcpy(mod_name,"Empty [Sub]Module");
-
    //打开保存JSON数据的文件 
    int fd = open("HwModuleConfig.json",O_RDONLY);
 	if(fd < 0 )
@@ -258,13 +255,13 @@ int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot,
       {
          if(subslot == 0) //要找的是module,非submodule
          {
-            (*mod_id)= (uint32_t) cJSON_GetObjectItem(module,"module_id")->valueint;
-            char*  mod_name = cJSON_GetObjectItem(module,"module_name")->valuestring;
-            //strcpy(mod_name, str);
+            (*hw_mod_id)= (uint32_t) cJSON_GetObjectItem(module,"module_id")->valueint;
+            char*  str = cJSON_GetObjectItem(module,"module_name")->valuestring;
+            strcpy(hw_mod_name, str);
 
             APP_LOG_DEBUG (
                 "从json中检索 Slot: %2u, SubSlot: %2u,获得 mod_id: 0x%x, mod_name: \"%s\"\n",
-               slot, subslot, *mod_id, mod_name );
+               slot, subslot, *hw_mod_id, hw_mod_name );
 
             return 0;
 
@@ -281,13 +278,13 @@ int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot,
                 
                if(slot ==  hw2_slot && subslot == hw2_subslot) //匹配
                {
-                  (*mod_id) = (uint32_t)  cJSON_GetObjectItem(submodule,"submodule_id")->valueint;
-                  char* mod_name =  cJSON_GetObjectItem(submodule,"submodule_id")->valuestring;
+                  (*hw_mod_id) = (uint32_t)  cJSON_GetObjectItem(submodule,"submodule_id")->valueint;
+                  char* mod_name =  cJSON_GetObjectItem(submodule,"submodule_name")->valuestring;
                   //strcpy(mod_name, str);
                   
                   APP_LOG_DEBUG (
                      "从json中检索 Slot: %2u, SubSlot: %2u,获得 mod_id: 0x%x, mod_name: \"%s\"\n",
-                     slot, subslot, (*mod_id), mod_name );
+                     slot, subslot, (*hw_mod_id), mod_name );
 
                   return 0;
                }
@@ -296,10 +293,17 @@ int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot,
       }
    }
 	
-   //未找到,则返回
+   //未找到,输出0值并返回
+   (* hw_mod_id) = 0;
+   if(subslot==0){
+      strcpy(hw_mod_name,"Empty Module");
+   }else{
+      strcpy(hw_mod_name,"Empty SubModule");
+   }
+   
    APP_LOG_DEBUG (
       "从json中检索 Slot: %2u, SubSlot: %2u,获得 mod_id: 0x%x, mod_name: \"%s\"\n",
-   slot, subslot, *mod_id, "Empty Module/Submodule" );
+   slot, subslot, *hw_mod_id, hw_mod_name );
 
    return 0;
 
@@ -593,10 +597,16 @@ static int app_exp_module_ind (
 
    // 从json文件中查找物理模块,配置不匹配则返回错误码.
    uint32_t hw_mod_id = 0;
-   app_get_HwModule_from_json(slot, 0, &hw_mod_id);  //subslot=0代表是module,非submodule
+   static char hw_mod_name[60]= {0};
+   app_get_HwModule_from_json(slot, 0, &hw_mod_id, hw_mod_name);  //subslot=0代表是module,非submodule
    if( hw_mod_id == 0 )  //Empty模块
    {
       APP_LOG_ERROR ("在 slot= %d 处没有物理模块. 挂载失败!\n", slot);
+      return -1;
+   }
+   if( hw_mod_id != module_ident )  //module组态与物理模块不符
+   {
+      APP_LOG_ERROR ("在 slot= %d 处组态的模块与物理模块不符. 挂载失败!\n", slot);
       return -1;
    }
    //==============================
@@ -670,8 +680,8 @@ static int app_exp_submodule_ind (
    uint32_t api,
    uint16_t slot,
    uint16_t subslot,
-   uint32_t module_id,
-   uint32_t submodule_id,
+   uint32_t module_ident,
+   uint32_t submodule_ident,
    const pnet_data_cfg_t * p_exp_data)
 {
    int ret = -1;
@@ -686,15 +696,21 @@ static int app_exp_submodule_ind (
 
    // 从json文件中查找物理子模块,配置不匹配则返回错误码.
    uint32_t hw_submod_id = 0;
-   app_get_HwModule_from_json(slot, subslot, &hw_submod_id);
+   static char hw_submod_name[60]= {0};
+   app_get_HwModule_from_json(slot, subslot, &hw_submod_id, hw_submod_name);
    if( hw_submod_id == 0 )  //Empty模块
    {
       APP_LOG_ERROR ("在 slot= %d, subslot=%d 处没有物理子模块. 挂载失败!\n", slot, subslot);
       return -1;
    }
+   if( hw_submod_id != submodule_ident )  //submodule组态与物理模块不符
+   {
+      APP_LOG_ERROR ("在 slot= %d subslot= %d 处组态的子模块与物理模块不符. 挂载失败!\n", slot, subslot);
+      return -1;
+   }
    //==============================
 
-   submod_cfg = app_gsdml_get_submodule_cfg (submodule_id);
+   submod_cfg = app_gsdml_get_submodule_cfg (submodule_ident);
    if (submod_cfg != NULL)
    {
       data_cfg.data_dir = submod_cfg->data_dir;
@@ -712,8 +728,8 @@ static int app_exp_submodule_ind (
       APP_LOG_WARNING (
          "  Submodule ID 0x%x in module ID 0x%x not found. API: %u Slot: %2u "
          "Subslot %u \n",
-         (unsigned)submodule_id,
-         (unsigned)module_id,
+         (unsigned)submodule_ident,
+         (unsigned)module_ident,
          api,
          slot,
          subslot);
@@ -746,9 +762,9 @@ static int app_exp_submodule_ind (
       "                      Subslot: %u Submodule ID: 0x%x \"%s\"\n",
       api,
       slot,
-      (unsigned)module_id,
+      (unsigned)module_ident,
       subslot,
-      (unsigned)submodule_id,
+      (unsigned)submodule_ident,
       name);
 
    APP_LOG_DEBUG (
@@ -773,8 +789,8 @@ static int app_exp_submodule_ind (
       api,
       slot,
       subslot,
-      module_id,
-      submodule_id,
+      module_ident,
+      submodule_ident,
       data_cfg.data_dir,
       data_cfg.insize,
       data_cfg.outsize);
@@ -785,7 +801,7 @@ static int app_exp_submodule_ind (
          &app->main_api,
          slot,
          subslot,
-         submodule_id,
+         submodule_ident,
          &data_cfg,
          name,
          cyclic_data_callback,
@@ -800,8 +816,8 @@ static int app_exp_submodule_ind (
          api,
          slot,
          subslot,
-         (unsigned)module_id,
-         (unsigned)submodule_id);
+         (unsigned)module_ident,
+         (unsigned)submodule_ident);
    }
 
    return ret;
