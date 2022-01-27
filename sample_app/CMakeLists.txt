@@ -16,6 +16,8 @@ target_include_directories(pn_dev
   ${PROFINET_BINARY_DIR}/src
   )
 
-target_link_libraries (pn_dev PUBLIC profinet)
+find_library(cjson NAMES libcjson PATHS /usr/lib/)
+
+target_link_libraries (pn_dev PUBLIC profinet cjson)
 
 install (TARGETS pn_dev DESTINATION bin)

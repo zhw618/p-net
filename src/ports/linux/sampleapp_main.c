@@ -250,6 +250,7 @@ bool read_bool_from_file (const char * filepath)
    return ch == '1';
 }
 
+
 //获取按钮的当前值,参数id为button的id号,从0开始
 bool app_get_button (uint16_t id)
 {

@@ -59,6 +59,8 @@ static void app_handle_data_led_state (bool led_state)
 }
 
 uint8_t * app_data_get_input_data (
+   uint16_t slot_nbr,     //添加上 slot_nbr
+   uint16_t subslot_nbr,  //添加上 subslot_nbr
    uint32_t submodule_id,
    bool button_pressed,
    uint8_t counter,
@@ -67,6 +69,12 @@ uint8_t * app_data_get_input_data (
 {
    if (size == NULL || iops == NULL)
    {
+      return NULL;
+   }
+   
+   if ( slot_nbr >= 4 ) //没有这个实际模块
+   {
+      *iops = PNET_IOXS_BAD;
       return NULL;
    }
 

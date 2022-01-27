@@ -1,0 +1,46 @@
+{
+    "modules":[
+		{
+			"api":0,
+			"slot":0,
+			"module_id":1,
+			"module_name":"DAP 1",
+			"submodules":
+			[
+			   {"api":0,
+			    "slot":0,
+			    "subslot":1,
+			    "submodule_id":1,
+			    "submodule_name":"DAP Identity 1"
+			   },
+			   {"api":0,
+			    "slot":0,
+			    "subslot":32768,
+			    "submodule_id":32768, 
+			    "submodule_name":"DAP Identity 1"
+			   },
+			   {"api":0,
+			    "slot":0,
+			    "subslot":32769,
+			    "submodule_id":32769, 
+			    "submodule_name":"DAP Port 1"
+			   }
+			]
+		},
+		{
+			"api":0,
+			"slot":1,
+			"module_id":50,
+			"module_name":"DIO 8xLogicLevel",
+			"submodules":
+			[
+			   {"api":0,
+			    "slot":1,
+			    "subslot":1,
+			    "submodule_id":306,
+			    "submodule_name":"Digital Input/Output"
+			   }
+			]
+		}
+    ]
+}

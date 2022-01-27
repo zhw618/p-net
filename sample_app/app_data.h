@@ -59,6 +59,8 @@ extern "C" {
  * @return Reference to PNIO data, NULL on error
  */
 uint8_t * app_data_get_input_data (
+   uint16_t slot_nbr,     //添加上 slot_nbr
+   uint16_t subslot_nbr,  //添加上 subslot_nbr
    uint32_t submodule_id,
    bool button_state,
    uint8_t counter,
