@@ -145,8 +145,8 @@ bool app_get_button (uint16_t id);
  * @param hw_mod_name    Out: module_name 或submodule_name, 若为Empty模块则值为"Empty Mod/SubMod"
  * @return 0 if success and -1 for error
  */
-int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot, 
-                                uint32_t* hw_mod_id, char* hw_mod_name);
+// int app_get_HwModule_from_json (uint16_t slot, uint16_t subslot, 
+//                                 uint32_t* hw_mod_id, char* hw_mod_name);
 
 #ifdef __cplusplus
 }
