@@ -92,7 +92,42 @@ target_compile_options(pn_dev
 target_link_options(pn_dev
    PRIVATE
    -Wl,--gc-sections
-)
+  )
+
+#========以下4条供 pn_shm 使用============
+target_include_directories(pn_shm
+  PRIVATE
+  sample_app
+  src/ports/linux
+  )
+
+target_sources(pn_shm
+  PRIVATE
+  sample_app/shmapp_common.c
+  sample_app/app_utils.c
+  sample_app/app_log.c
+  sample_app/app_gsdml.c
+  sample_app/app_data.c
+  src/ports/linux/shmapp_main.c
+  )
+
+target_compile_options(pn_shm
+  PRIVATE
+  -Wall
+  -Wextra
+  -Werror
+  -Wno-unused-parameter
+  -ffunction-sections
+  -fdata-sections
+  )
+
+target_link_options(pn_shm
+   PRIVATE
+   -Wl,--gc-sections
+  )
+#========结束: 以上4条供 pn_shm 使用============
+  
+   
 
 install (FILES
   src/ports/linux/pnal_config.h

@@ -21,3 +21,16 @@ find_library(cjson NAMES libcjson PATHS /usr/lib/)
 target_link_libraries (pn_dev PUBLIC profinet cjson)
 
 install (TARGETS pn_dev DESTINATION bin)
+
+#以下为 pn_shm 的配置
+target_include_directories(pn_shm
+  PRIVATE
+  ${PROFINET_SOURCE_DIR}/src
+  ${PROFINET_BINARY_DIR}/src
+  )
+
+find_library(cjson NAMES libcjson PATHS /usr/lib/)
+
+target_link_libraries (pn_shm PUBLIC profinet cjson)
+
+install (TARGETS pn_shm DESTINATION bin)

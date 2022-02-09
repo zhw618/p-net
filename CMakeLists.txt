@@ -168,6 +168,7 @@ configure_file (
 # platform
 add_library(profinet "")
 add_executable(pn_dev "")
+add_executable(pn_shm "")   #添加新target,pn与shm交互数据
 
 if (CMAKE_PROJECT_NAME STREQUAL PROFINET AND BUILD_TESTING)
   add_executable(pf_test "")
@@ -182,6 +183,11 @@ generate_export_header(profinet
   )
 
 set_target_properties (profinet pn_dev
+  PROPERTIES
+  C_STANDARD 99
+  )
+
+set_target_properties (profinet pn_shm
   PROPERTIES
   C_STANDARD 99
   )
