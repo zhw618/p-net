@@ -1090,7 +1090,14 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
    uint16_t outdata_length;
    uint8_t outdata_iops;
 
-   uint8_t outdata_buf[10]; /* Todo: Remove temporary buffer */
+   /* ************************************************
+    * outdata 缓冲区, 用于接收模块从PLC接收到的数据
+    * 【注意】所有模块从PLC接收的outdata, 都要放到此缓冲区
+    *         其size不能太小!! 否则产生段错误!
+    * 
+    * 改为static变量,避免在 stack 上反复分配空间.
+    * ************************************************/
+   static uint8_t outdata_buf[64]; 
 
    if (app == NULL)
    {
@@ -1105,6 +1112,8 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
        * includes button state and a counter value
        */
       indata = app_data_get_input_data (
+         subslot->slot_nbr,
+         subslot->subslot_nbr,
          subslot->submodule_id,
          app->button1_pressed,
          app->counter_data,
@@ -1170,10 +1179,12 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
       else if (outdata_iops == PNET_IOXS_GOOD)
       {
          /* Set output data for submodule */
-         app_data_set_output_data (
-            subslot->submodule_id,
-            outdata_buf,
-            outdata_length);
+            app_data_set_output_data (
+               subslot->slot_nbr,
+               subslot->subslot_nbr,
+               subslot->submodule_id,
+               outdata_buf,
+               outdata_length);
       }
       else
       {
@@ -1219,6 +1230,8 @@ static int app_set_initial_data_and_ioxs (app_data_t * app)
                if (p_subslot->data_cfg.insize > 0)
                {
                   indata = app_data_get_input_data (  //获得用户数据
+                     p_subslot->slot_nbr,
+                     p_subslot->subslot_nbr,
                      p_subslot->submodule_id,
                      app->button1_pressed,
                      app->counter_data,

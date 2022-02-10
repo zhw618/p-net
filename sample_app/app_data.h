@@ -59,8 +59,8 @@ extern "C" {
  * @return Reference to PNIO data, NULL on error
  */
 uint8_t * app_data_get_input_data (
-   //uint16_t slot_nbr,     //添加上 slot_nbr
-   //uint16_t subslot_nbr,  //添加上 subslot_nbr
+   uint16_t slot_nbr,     //添加上 slot_nbr
+   uint16_t subslot_nbr,  //添加上 subslot_nbr
    uint32_t submodule_id,
    bool button_state,
    uint8_t counter,
@@ -69,12 +69,16 @@ uint8_t * app_data_get_input_data (
 
 /**
  * Set PNIO output data using module id.
+ * @param slot_nbr      In:  Slot number, 需添加上!
+ * @param subslot_nbr   In:  SubSlot number, 需添加上!
  * @param submodule_id  In:  Submodule id
  * @param data          In:  Reference to output data
  * @param size          In:  Length of output data
  * @return 0 on success, -1 on error
  */
 int app_data_set_output_data (
+   uint16_t slot_nbr,     //添加上 slot_nbr
+   uint16_t subslot_nbr,  //添加上 subslot_nbr
    uint32_t submodule_id,
    uint8_t * data,
    uint16_t size);

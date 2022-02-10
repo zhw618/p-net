@@ -36,21 +36,30 @@ static const app_gsdml_module_t dap_1 = {
       PNET_SUBMOD_DAP_INTERFACE_1_PORT_4_IDENT,
       0}};
 
+//DI模块定义
 static const app_gsdml_module_t module_digital_in = {
    .id = APP_GSDML_MOD_ID_8_0_DIGITAL_IN,
    .name = "DI 8xLogicLevel",
    .submodules = {APP_GSDML_SUBMOD_ID_DIGITAL_IN, 0},
 };
 
+//DO模块定义
 static const app_gsdml_module_t module_digital_out = {
    .id = APP_GSDML_MOD_ID_0_8_DIGITAL_OUT,
    .name = "DO 8xLogicLevel",
    .submodules = {APP_GSDML_SUBMOD_ID_DIGITAL_OUT, 0}};
 
+//DIO混合模块定义
 static const app_gsdml_module_t module_digital_in_out = {
    .id = APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT,
    .name = "DIO 8xLogicLevel",
    .submodules = {APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT, 0}};
+
+//PDO CiA402 伺服SHM映像模块, 自定义! 需与gsd文件匹配
+static const app_gsdml_module_t module_pdo_cia402_in_out = {
+   .id = APP_GSDML_MOD_ID_40_40_BYTE_IN_OUT,
+   .name = "PDO CiA402",
+   .submodules = {APP_GSDML_SUBMOD_ID_BYTE_IN_OUT, 0}};
 
 static const app_gsdml_submodule_t dap_indentity_1 = {
    .name = "DAP Identity 1",
@@ -106,6 +115,7 @@ static const app_gsdml_submodule_t dap_port_4 = {
    .outsize = 0,
    .parameters = {0}};
 
+//DI子模块
 static const app_gsdml_submodule_t submod_digital_in = {
    .id = APP_GSDML_SUBMOD_ID_DIGITAL_IN,
    .name = "Digital Input",
@@ -115,6 +125,7 @@ static const app_gsdml_submodule_t submod_digital_in = {
    .outsize = 0,
    .parameters = {0}};
 
+//DO子模块
 static const app_gsdml_submodule_t submod_digital_out = {
    .id = APP_GSDML_SUBMOD_ID_DIGITAL_OUT,
    .name = "Digital Output",
@@ -124,6 +135,7 @@ static const app_gsdml_submodule_t submod_digital_out = {
    .outsize = APP_GSDML_OUTPUT_DATA_SIZE,
    .parameters = {0}};
 
+//DIO混合模块的子模块
 static const app_gsdml_submodule_t submod_digital_inout = {
    .id = APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT,
    .name = "Digital Input/Output",
@@ -133,9 +145,20 @@ static const app_gsdml_submodule_t submod_digital_inout = {
    .outsize = APP_GSDML_OUTPUT_DATA_SIZE,
    .parameters = {APP_GSDM_PARAMETER_1_IDX, APP_GSDM_PARAMETER_2_IDX, 0}};
 
+//PDO CiA402 伺服模块的子模块
+static const app_gsdml_submodule_t submod_pdo_cia402_inout = {
+   .id = APP_GSDML_SUBMOD_ID_BYTE_IN_OUT,
+   .name = "PDO CiA402",
+   .api = APP_GSDML_API,
+   .data_dir = PNET_DIR_IO,
+   .insize = APP_GSDML_TxPDO_DATA_SIZE,
+   .outsize = APP_GSDML_RxPDO_DATA_SIZE,
+   .parameters = {APP_GSDM_PARAMETER_1_IDX, APP_GSDM_PARAMETER_2_IDX, 0}};
+
 /* List of supported modules */
 static const app_gsdml_module_t * app_gsdml_modules[] =
-   {&dap_1, &module_digital_in, &module_digital_out, &module_digital_in_out};
+   {&dap_1, &module_digital_in, &module_digital_out, &module_digital_in_out,
+    &module_pdo_cia402_in_out };    //增加自定义module
 
 /* List of supported submodules */
 static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
@@ -149,6 +172,8 @@ static const app_gsdml_submodule_t * app_gsdml_submodules[] = {
    &submod_digital_in,
    &submod_digital_out,
    &submod_digital_inout,
+
+   &submod_pdo_cia402_inout,  //增加自定义submod
 };
 
 /* List of supported parameters.

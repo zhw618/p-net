@@ -19,6 +19,7 @@
 #include "app_gsdml.h"
 #include "app_log.h"
 #include "app_utils.h"
+#include "servoshm.h"   /*获取伺服控制器SHM共享内存*/
 
 #include "osal.h"
 #include "osal_log.h" /* For LOG_LEVEL */
@@ -345,10 +346,32 @@ int app_pnet_cfg_init_storage (pnet_cfg_t * p_cfg, app_args_t * p_args)
    return 0;
 }
 
+//共享内存 SHM 指针 全局变量
+uint8_t * pSHMMapAddr;
+
 /****************************** Main ******************************************/
 
 int main (int argc, char * argv[])
 {
+   /* ------------ 首先获取SHM共享内存 ---------------- */
+   /* 【注意】Profinet默认 Big-Endian(大端)，
+    *        而EtherCAT默认为Little-Endian(小端)
+    *  本程序不进行大小端转换，故SHM内存中数据为大端存放！
+    * --------------------------------------------------*/
+   pSHMMapAddr = getIOMapShm();
+   if( (int)pSHMMapAddr == -1 || pSHMMapAddr == NULL)
+   {
+      printf("[ERROR] 获取共享内存失败. 退出程序~\n");
+      return -1;
+   } 
+   else 
+   {
+      printf("SHM共享内存检索成功~\n");
+      printf("--Debug show: IOMap= 0x%08x \n\n", (uint32_t)pSHMMapAddr );
+   }
+   
+
+   /* --------- Profinet协议栈程序开始 ---------------- */
    int ret;
    int32_t app_log_level = APP_LOG_LEVEL_FATAL;
    pnet_cfg_t pnet_cfg = {0};

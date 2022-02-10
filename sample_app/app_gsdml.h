@@ -40,7 +40,7 @@ extern "C" {
 #define APP_GSDML_API 0
 
 //#define APP_GSDML_DEFAULT_STATION_NAME "rt-labs-dev"
-#define APP_GSDML_DEFAULT_STATION_NAME "DAWSON"
+#define APP_GSDML_DEFAULT_STATION_NAME "dawson"
 
 /* GSDML tag: VendorID */
 #define APP_GSDML_VENDOR_ID 0xfeed
@@ -60,7 +60,7 @@ extern "C" {
 /* GSDML tag: OrderNumber */
 #define APP_GSDML_ORDER_ID "12345 Abcdefghijk"
 /* GSDML tag: ModuleInfo / Name */
-#define APP_GSDML_PRODUCT_NAME "P-Net Sample Application"
+#define APP_GSDML_PRODUCT_NAME "EtherCAT Servo"
 
 /* GSDML tag: MinDeviceInterval */
 #define APP_GSDML_MIN_DEVICE_INTERVAL 32 /* 1ms */
@@ -106,13 +106,18 @@ typedef struct
 #define APP_GSDML_MOD_ID_8_0_DIGITAL_IN     0x00000030
 #define APP_GSDML_MOD_ID_0_8_DIGITAL_OUT    0x00000031
 #define APP_GSDML_MOD_ID_8_8_DIGITAL_IN_OUT 0x00000032
+#define APP_GSDML_MOD_ID_40_40_BYTE_IN_OUT  0x00000040  //伺服PDO模块ID
+
 #define APP_GSDML_SUBMOD_ID_DIGITAL_IN      0x00000130
 #define APP_GSDML_SUBMOD_ID_DIGITAL_OUT     0x00000131
 #define APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT  0x00000132
+#define APP_GSDML_SUBMOD_ID_BYTE_IN_OUT     0x00000140  //伺服PDO子模块ID
 
-#define APP_GSDML_INPUT_DATA_SIZE   1 /* bytes, for digital inputs data */
-#define APP_GSDML_OUTPUT_DATA_SIZE  1 /* bytes, for digital outputs data */
-#define APP_GSDM_ALARM_PAYLOAD_SIZE 1 /* bytes */
+#define APP_GSDML_INPUT_DATA_SIZE   1  /* bytes, for digital inputs data */
+#define APP_GSDML_OUTPUT_DATA_SIZE  1  /* bytes, for digital outputs data */
+#define APP_GSDM_ALARM_PAYLOAD_SIZE 1  /* bytes */
+#define APP_GSDML_TxPDO_DATA_SIZE   40 /* bytes, for TxPDO,inputs data */
+#define APP_GSDML_RxPDO_DATA_SIZE   40 /* bytes, for RxPDO,outputs data */
 
 /**
  * Get module configuration from module id
