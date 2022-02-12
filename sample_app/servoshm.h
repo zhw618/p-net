@@ -27,7 +27,8 @@ uint8_t* getIOMapShm()
 
     //attach到进程空间
     void * addr = shmat(shmid, NULL , 0);
-    if( (int)addr == -1 || addr ==NULL ){
+    if( addr == (void*)-1 ) // || addr ==NULL )
+    {
         printf("failed to attach share memory.\n");
         return (uint8_t*)-1;
     }

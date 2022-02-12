@@ -359,7 +359,7 @@ int main (int argc, char * argv[])
     *  本程序不进行大小端转换，故SHM内存中数据为大端存放！
     * --------------------------------------------------*/
    pSHMMapAddr = getIOMapShm();
-   if( (int)pSHMMapAddr == -1 || pSHMMapAddr == NULL)
+   if( pSHMMapAddr == (void*)-1 )  // || pSHMMapAddr == NULL)
    {
       printf("[ERROR] 获取共享内存失败. 退出程序~\n");
       return -1;
@@ -367,7 +367,7 @@ int main (int argc, char * argv[])
    else 
    {
       printf("SHM共享内存检索成功~\n");
-      printf("--Debug show: IOMap= 0x%08x \n\n", (uint32_t)pSHMMapAddr );
+      printf("--Debug show: IOMap= 0x%8p \n\n", pSHMMapAddr );
    }
    
 

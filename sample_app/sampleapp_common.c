@@ -1171,6 +1171,8 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
       {
          /* Set output data for submodule */
          app_data_set_output_data (
+            subslot->slot_nbr,
+            subslot->subslot_nbr,
             subslot->submodule_id,
             outdata_buf,
             outdata_length);
