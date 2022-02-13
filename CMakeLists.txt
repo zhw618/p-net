@@ -167,7 +167,7 @@ configure_file (
 # Add platform-dependent targets early, so they can be configured by
 # platform
 add_library(profinet "")
-add_executable(pn_dev "")
+#add_executable(pn_dev "")
 add_executable(pn_shm "")   #添加新target,pn与shm交互数据
 
 if (CMAKE_PROJECT_NAME STREQUAL PROFINET AND BUILD_TESTING)
@@ -182,10 +182,10 @@ generate_export_header(profinet
   EXPORT_FILE_NAME ${PROFINET_BINARY_DIR}/include/pnet_export.h
   )
 
-set_target_properties (profinet pn_dev
-  PROPERTIES
-  C_STANDARD 99
-  )
+# set_target_properties (profinet pn_dev
+#   PROPERTIES
+#   C_STANDARD 99
+#   )
 
 set_target_properties (profinet pn_shm
   PROPERTIES

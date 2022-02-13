@@ -63,36 +63,37 @@ target_link_libraries(profinet
   $<$<CONFIG:Coverage>:--coverage>
   )
 
-target_include_directories(pn_dev
-  PRIVATE
-  sample_app
-  src/ports/linux
-  )
+# ######### pn_dev的四条不再使用!
+# target_include_directories(pn_dev
+#   PRIVATE
+#   sample_app
+#   src/ports/linux
+#   )
 
-target_sources(pn_dev
-  PRIVATE
-  sample_app/sampleapp_common.c
-  sample_app/app_utils.c
-  sample_app/app_log.c
-  sample_app/app_gsdml.c
-  sample_app/app_data.c
-  src/ports/linux/sampleapp_main.c
-  )
+# target_sources(pn_dev
+#   PRIVATE
+#   sample_app/sampleapp_common.c
+#   sample_app/app_utils.c
+#   sample_app/app_log.c
+#   sample_app/app_gsdml.c
+#   sample_app/app_data.c
+#   src/ports/linux/sampleapp_main.c
+#   )
 
-target_compile_options(pn_dev
-  PRIVATE
-  -Wall
-  -Wextra
-  -Werror
-  -Wno-unused-parameter
-  -ffunction-sections
-  -fdata-sections
-  )
+# target_compile_options(pn_dev
+#   PRIVATE
+#   -Wall
+#   -Wextra
+#   -Werror
+#   -Wno-unused-parameter
+#   -ffunction-sections
+#   -fdata-sections
+#   )
 
-target_link_options(pn_dev
-   PRIVATE
-   -Wl,--gc-sections
-  )
+# target_link_options(pn_dev
+#    PRIVATE
+#    -Wl,--gc-sections
+#   )
 
 #========以下4条供 pn_shm 使用============
 target_include_directories(pn_shm
