@@ -481,6 +481,24 @@ static int app_read_ind (
    return 0;
 }
 
+/* ********************************************
+ * 获取当前日期时间字符串,例如:2022-02-19 14:25:07
+ * *******************************************/
+ char* getNowTime()
+ {
+     struct timespec ts;
+     clock_gettime(CLOCK_REALTIME, &ts);
+     //printf("clock_gettime : tv_sec=%ld, tv_nsec=%ld\n",ts.tv_sec, ts.tv_nsec);
+     
+     struct tm t;
+     static char date_time[64];
+     strftime(date_time, sizeof(date_time), "%Y-%m-%d %H:%M:%S", localtime_r(&ts.tv_sec, &t));//只到秒上
+     //printf("clock_gettime :date_time=%s, tv_nsec=%ld\n", date_time, ts.tv_nsec);
+
+     return date_time;
+
+ }
+
 static int app_state_ind (
    pnet_t * net,
    void * arg,
@@ -545,7 +563,7 @@ static int app_state_ind (
    }
    else if (state == PNET_EVENT_DATA)
    {
-      APP_LOG_DEBUG ("Cyclic data transmission started\n\n");
+      APP_LOG_DEBUG ("[%s]Cyclic data transmission started\n\n", getNowTime() );
    }
 
    return 0;
@@ -1664,7 +1682,7 @@ void app_loop_forever (void * arg)
 
    app_set_led (APP_DATA_LED_ID, false);
    app_plug_dap (app, app->pnet_cfg->num_physical_ports);
-   APP_LOG_INFO ("Waiting for PLC connect request\n\n");
+   APP_LOG_INFO ("[%s]Waiting for PLC connect request\n\n", getNowTime() );
 
    /* Main event loop */
    for (;;)
@@ -1713,8 +1731,8 @@ void app_loop_forever (void * arg)
 
          app->main_api.arep = UINT32_MAX;
          app->alarm_allowed = true;
-         APP_LOG_DEBUG ("Connection closed\n");
-         APP_LOG_DEBUG ("Waiting for PLC connect request\n\n");
+         APP_LOG_DEBUG ("[%s]Connection closed\n", getNowTime() );
+         APP_LOG_DEBUG ("[%s]Waiting for PLC connect request\n\n", getNowTime() );
       }
    }
 }
