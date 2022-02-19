@@ -30,7 +30,9 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <sys/mman.h>   /* mlockall() 锁住内存 */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -370,6 +372,11 @@ int main (int argc, char * argv[])
       printf("--Debug show: IOMap= 0x%8p \n\n", pSHMMapAddr );
    }
    
+   /* --------- Lock memory ---------------- */
+    if (mlockall(MCL_CURRENT | MCL_FUTURE) == -1) {
+        APP_LOG_WARNING ("[WARN]Failed to lock memory: %s\n", strerror(errno) );
+    }
+
 
    /* --------- Profinet协议栈程序开始 ---------------- */
    int ret;
