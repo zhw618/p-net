@@ -93,9 +93,9 @@ typedef struct app_data_t
 
    uint32_t arep_for_appl_ready;
 
-   bool button1_pressed;
-   bool button2_pressed;
-   bool button2_pressed_previous;
+   //bool button1_pressed;
+   //bool button2_pressed;
+   //bool button2_pressed_previous;
 
    /* Counters used to control when buttons are checked
     * and process data is updated
@@ -583,11 +583,13 @@ static int app_reset_ind (
    return 0;
 }
 
+
+/* 示例程序中控制LED灯 */
 static int app_signal_led_ind (pnet_t * net, void * arg, bool led_state)
 {
    APP_LOG_INFO ("Profinet signal LED indication. New state: %u\n", led_state);
 
-   app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
+   //app_set_led (APP_PROFINET_SIGNAL_LED_ID, led_state);
    return 0;
 }
 
@@ -1133,7 +1135,7 @@ static void app_cyclic_data_callback (app_subslot_t * subslot, void * tag)
          subslot->slot_nbr,
          subslot->subslot_nbr,
          subslot->submodule_id,
-         app->button1_pressed,
+         0, //app->button1_pressed,
          app->counter_data,
          &indata_size,
          &iops);
@@ -1251,7 +1253,7 @@ static int app_set_initial_data_and_ioxs (app_data_t * app)
                      p_subslot->slot_nbr,
                      p_subslot->subslot_nbr,
                      p_subslot->submodule_id,
-                     app->button1_pressed,
+                     0, //app->button1_pressed,
                      app->counter_data,
                      &indata_size,
                      &iops);
@@ -1359,282 +1361,282 @@ static void app_handle_cyclic_data (app_data_t * app)
  *
  * @param app             InOut:    Application handle
  */
-static void app_handle_demo_pnet_api (app_data_t * app)
-{
-   uint16_t slot = 0;
-   bool found_inputsubslot = false;
-   uint16_t subslot_ix = 0;
-   const app_subslot_t * p_subslot = NULL;
-   pnet_pnio_status_t pnio_status = {0};
-   pnet_diag_source_t diag_source = {
-      .api = APP_GSDML_API,
-      .slot = 0,
-      .subslot = 0,
-      .ch = APP_DIAG_CHANNEL_NUMBER,
-      .ch_grouping = PNET_DIAG_CH_INDIVIDUAL_CHANNEL,
-      .ch_direction = APP_DIAG_CHANNEL_DIRECTION};
+// static void app_handle_demo_pnet_api (app_data_t * app)
+// {
+//    uint16_t slot = 0;
+//    bool found_inputsubslot = false;
+//    uint16_t subslot_ix = 0;
+//    const app_subslot_t * p_subslot = NULL;
+//    pnet_pnio_status_t pnio_status = {0};
+//    pnet_diag_source_t diag_source = {
+//       .api = APP_GSDML_API,
+//       .slot = 0,
+//       .subslot = 0,
+//       .ch = APP_DIAG_CHANNEL_NUMBER,
+//       .ch_grouping = PNET_DIAG_CH_INDIVIDUAL_CHANNEL,
+//       .ch_direction = APP_DIAG_CHANNEL_DIRECTION};
 
-   /* Loop though slots and subslots to find first input subslot */
-   while (!found_inputsubslot && (slot < PNET_MAX_SLOTS))
-   {
-      for (subslot_ix = 0;
-           !found_inputsubslot && (subslot_ix < PNET_MAX_SUBSLOTS);
-           subslot_ix++)
-      {
-         p_subslot = &app->main_api.slots[slot].subslots[subslot_ix];
-         if (app_utils_subslot_is_input (p_subslot))
-         {
-            found_inputsubslot = true;
-            break;
-         }
-      }
-      if (!found_inputsubslot)
-      {
-         slot++;
-      }
-   }
-   if (!found_inputsubslot)
-   {
-      APP_LOG_DEBUG ("Did not find any input module in the slots. Skipping.\n");
-      return;
-   }
+//    /* Loop though slots and subslots to find first input subslot */
+//    while (!found_inputsubslot && (slot < PNET_MAX_SLOTS))
+//    {
+//       for (subslot_ix = 0;
+//            !found_inputsubslot && (subslot_ix < PNET_MAX_SUBSLOTS);
+//            subslot_ix++)
+//       {
+//          p_subslot = &app->main_api.slots[slot].subslots[subslot_ix];
+//          if (app_utils_subslot_is_input (p_subslot))
+//          {
+//             found_inputsubslot = true;
+//             break;
+//          }
+//       }
+//       if (!found_inputsubslot)
+//       {
+//          slot++;
+//       }
+//    }
+//    if (!found_inputsubslot)
+//    {
+//       APP_LOG_DEBUG ("Did not find any input module in the slots. Skipping.\n");
+//       return;
+//    }
 
-   diag_source.slot = slot;
-   diag_source.subslot = p_subslot->subslot_nbr;
+//    diag_source.slot = slot;
+//    diag_source.subslot = p_subslot->subslot_nbr;
 
-   switch (app->alarm_demo_state)
-   {
-   case APP_DEMO_STATE_ALARM_SEND:
-      if (app->alarm_allowed == true && app->main_api.arep != UINT32_MAX)
-      {
-         app->alarm_payload[0]++;
-         APP_LOG_INFO (
-            "Sending process alarm from slot %u subslot %u USI %u to "
-            "PLC. Payload: 0x%x\n",
-            slot,
-            p_subslot->subslot_nbr,
-            APP_ALARM_USI,
-            app->alarm_payload[0]);
-         pnet_alarm_send_process_alarm (
-            app->net,
-            app->main_api.arep,
-            APP_GSDML_API,
-            slot,
-            p_subslot->subslot_nbr,
-            APP_ALARM_USI,
-            APP_GSDM_ALARM_PAYLOAD_SIZE,
-            app->alarm_payload);
-         app->alarm_allowed = false; /* Not allowed until ACK received */
+//    switch (app->alarm_demo_state)
+//    {
+//    case APP_DEMO_STATE_ALARM_SEND:
+//       if (app->alarm_allowed == true && app->main_api.arep != UINT32_MAX)
+//       {
+//          app->alarm_payload[0]++;
+//          APP_LOG_INFO (
+//             "Sending process alarm from slot %u subslot %u USI %u to "
+//             "PLC. Payload: 0x%x\n",
+//             slot,
+//             p_subslot->subslot_nbr,
+//             APP_ALARM_USI,
+//             app->alarm_payload[0]);
+//          pnet_alarm_send_process_alarm (
+//             app->net,
+//             app->main_api.arep,
+//             APP_GSDML_API,
+//             slot,
+//             p_subslot->subslot_nbr,
+//             APP_ALARM_USI,
+//             APP_GSDM_ALARM_PAYLOAD_SIZE,
+//             app->alarm_payload);
+//          app->alarm_allowed = false; /* Not allowed until ACK received */
 
-         /* todo handle return code on pnet_alarm_send_process_alarm */
-      }
-      else
-      {
-         APP_LOG_WARNING (
-            "Could not send process alarm, as alarm_allowed == false or "
-            "no connection available\n");
-      }
-      break;
+//          /* todo handle return code on pnet_alarm_send_process_alarm */
+//       }
+//       else
+//       {
+//          APP_LOG_WARNING (
+//             "Could not send process alarm, as alarm_allowed == false or "
+//             "no connection available\n");
+//       }
+//       break;
 
-   case APP_DEMO_STATE_CYCLIC_REDUNDANT:
-      APP_LOG_INFO (
-         "Setting cyclic data to backup and to redundant. See Wireshark.\n");
-      if (pnet_set_primary_state (app->net, false) != 0)
-      {
-         APP_LOG_WARNING ("   Could not set cyclic data state to backup.\n");
-      }
-      if (pnet_set_redundancy_state (app->net, true) != 0)
-      {
-         APP_LOG_WARNING ("   Could not set cyclic data state to reundant.\n");
-      }
-      break;
+//    case APP_DEMO_STATE_CYCLIC_REDUNDANT:
+//       APP_LOG_INFO (
+//          "Setting cyclic data to backup and to redundant. See Wireshark.\n");
+//       if (pnet_set_primary_state (app->net, false) != 0)
+//       {
+//          APP_LOG_WARNING ("   Could not set cyclic data state to backup.\n");
+//       }
+//       if (pnet_set_redundancy_state (app->net, true) != 0)
+//       {
+//          APP_LOG_WARNING ("   Could not set cyclic data state to reundant.\n");
+//       }
+//       break;
 
-   case APP_DEMO_STATE_CYCLIC_NORMAL:
-      APP_LOG_INFO (
-         "Setting cyclic data back to primary and non-redundant. See "
-         "Wireshark.\n");
-      if (pnet_set_primary_state (app->net, true) != 0)
-      {
-         APP_LOG_ERROR ("   Could not set cyclic data state to primary.\n");
-      }
-      if (pnet_set_redundancy_state (app->net, false) != 0)
-      {
-         APP_LOG_ERROR (
-            "   Could not set cyclic data state to non-reundant.\n");
-      }
-      break;
+//    case APP_DEMO_STATE_CYCLIC_NORMAL:
+//       APP_LOG_INFO (
+//          "Setting cyclic data back to primary and non-redundant. See "
+//          "Wireshark.\n");
+//       if (pnet_set_primary_state (app->net, true) != 0)
+//       {
+//          APP_LOG_ERROR ("   Could not set cyclic data state to primary.\n");
+//       }
+//       if (pnet_set_redundancy_state (app->net, false) != 0)
+//       {
+//          APP_LOG_ERROR (
+//             "   Could not set cyclic data state to non-reundant.\n");
+//       }
+//       break;
 
-   case APP_DEMO_STATE_DIAG_STD_ADD:
-      APP_LOG_INFO (
-         "Adding standard diagnosis. Slot %u subslot %u channel %u Errortype "
-         "%u\n",
-         diag_source.slot,
-         diag_source.subslot,
-         diag_source.ch,
-         APP_DIAG_CHANNEL_ERRORTYPE);
-      (void)pnet_diag_std_add (
-         app->net,
-         &diag_source,
-         APP_DIAG_CHANNEL_NUMBER_OF_BITS,
-         APP_DIAG_CHANNEL_SEVERITY,
-         APP_DIAG_CHANNEL_ERRORTYPE,
-         APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE,
-         APP_DIAG_CHANNEL_ADDVALUE_A,
-         APP_DIAG_CHANNEL_QUAL_SEVERITY);
-      break;
+//    case APP_DEMO_STATE_DIAG_STD_ADD:
+//       APP_LOG_INFO (
+//          "Adding standard diagnosis. Slot %u subslot %u channel %u Errortype "
+//          "%u\n",
+//          diag_source.slot,
+//          diag_source.subslot,
+//          diag_source.ch,
+//          APP_DIAG_CHANNEL_ERRORTYPE);
+//       (void)pnet_diag_std_add (
+//          app->net,
+//          &diag_source,
+//          APP_DIAG_CHANNEL_NUMBER_OF_BITS,
+//          APP_DIAG_CHANNEL_SEVERITY,
+//          APP_DIAG_CHANNEL_ERRORTYPE,
+//          APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE,
+//          APP_DIAG_CHANNEL_ADDVALUE_A,
+//          APP_DIAG_CHANNEL_QUAL_SEVERITY);
+//       break;
 
-   case APP_DEMO_STATE_DIAG_STD_UPDATE:
-      APP_LOG_INFO (
-         "Updating standard diagnosis. Slot %u subslot %u channel %u\n",
-         diag_source.slot,
-         diag_source.subslot,
-         diag_source.ch);
-      pnet_diag_std_update (
-         app->net,
-         &diag_source,
-         APP_DIAG_CHANNEL_ERRORTYPE,
-         APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE,
-         APP_DIAG_CHANNEL_ADDVALUE_B);
-      break;
+//    case APP_DEMO_STATE_DIAG_STD_UPDATE:
+//       APP_LOG_INFO (
+//          "Updating standard diagnosis. Slot %u subslot %u channel %u\n",
+//          diag_source.slot,
+//          diag_source.subslot,
+//          diag_source.ch);
+//       pnet_diag_std_update (
+//          app->net,
+//          &diag_source,
+//          APP_DIAG_CHANNEL_ERRORTYPE,
+//          APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE,
+//          APP_DIAG_CHANNEL_ADDVALUE_B);
+//       break;
 
-   case APP_DEMO_STATE_DIAG_STD_REMOVE:
-      APP_LOG_INFO (
-         "Removing standard diagnosis. Slot %u subslot %u channel %u\n",
-         diag_source.slot,
-         diag_source.subslot,
-         diag_source.ch);
-      pnet_diag_std_remove (
-         app->net,
-         &diag_source,
-         APP_DIAG_CHANNEL_ERRORTYPE,
-         APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE);
-      break;
+//    case APP_DEMO_STATE_DIAG_STD_REMOVE:
+//       APP_LOG_INFO (
+//          "Removing standard diagnosis. Slot %u subslot %u channel %u\n",
+//          diag_source.slot,
+//          diag_source.subslot,
+//          diag_source.ch);
+//       pnet_diag_std_remove (
+//          app->net,
+//          &diag_source,
+//          APP_DIAG_CHANNEL_ERRORTYPE,
+//          APP_DIAG_CHANNEL_EXTENDED_ERRORTYPE);
+//       break;
 
-   case APP_DEMO_STATE_DIAG_USI_ADD:
-      APP_LOG_INFO (
-         "Adding USI diagnosis. Slot %u subslot %u\n",
-         slot,
-         p_subslot->subslot_nbr);
-      pnet_diag_usi_add (
-         app->net,
-         APP_GSDML_API,
-         slot,
-         p_subslot->subslot_nbr,
-         APP_GSDML_DIAG_CUSTOM_USI,
-         11,
-         (uint8_t *)"diagdata_1");
-      break;
+//    case APP_DEMO_STATE_DIAG_USI_ADD:
+//       APP_LOG_INFO (
+//          "Adding USI diagnosis. Slot %u subslot %u\n",
+//          slot,
+//          p_subslot->subslot_nbr);
+//       pnet_diag_usi_add (
+//          app->net,
+//          APP_GSDML_API,
+//          slot,
+//          p_subslot->subslot_nbr,
+//          APP_GSDML_DIAG_CUSTOM_USI,
+//          11,
+//          (uint8_t *)"diagdata_1");
+//       break;
 
-   case APP_DEMO_STATE_DIAG_USI_UPDATE:
-      APP_LOG_INFO (
-         "Updating USI diagnosis. Slot %u subslot %u\n",
-         slot,
-         p_subslot->subslot_nbr);
-      pnet_diag_usi_update (
-         app->net,
-         APP_GSDML_API,
-         slot,
-         p_subslot->subslot_nbr,
-         APP_GSDML_DIAG_CUSTOM_USI,
-         13,
-         (uint8_t *)"diagdata_123");
-      break;
+//    case APP_DEMO_STATE_DIAG_USI_UPDATE:
+//       APP_LOG_INFO (
+//          "Updating USI diagnosis. Slot %u subslot %u\n",
+//          slot,
+//          p_subslot->subslot_nbr);
+//       pnet_diag_usi_update (
+//          app->net,
+//          APP_GSDML_API,
+//          slot,
+//          p_subslot->subslot_nbr,
+//          APP_GSDML_DIAG_CUSTOM_USI,
+//          13,
+//          (uint8_t *)"diagdata_123");
+//       break;
 
-   case APP_DEMO_STATE_DIAG_USI_REMOVE:
-      APP_LOG_INFO (
-         "Removing USI diagnosis. Slot %u subslot %u\n",
-         slot,
-         p_subslot->subslot_nbr);
-      pnet_diag_usi_remove (
-         app->net,
-         APP_GSDML_API,
-         slot,
-         p_subslot->subslot_nbr,
-         APP_GSDML_DIAG_CUSTOM_USI);
-      break;
+//    case APP_DEMO_STATE_DIAG_USI_REMOVE:
+//       APP_LOG_INFO (
+//          "Removing USI diagnosis. Slot %u subslot %u\n",
+//          slot,
+//          p_subslot->subslot_nbr);
+//       pnet_diag_usi_remove (
+//          app->net,
+//          APP_GSDML_API,
+//          slot,
+//          p_subslot->subslot_nbr,
+//          APP_GSDML_DIAG_CUSTOM_USI);
+//       break;
 
-   case APP_DEMO_STATE_LOGBOOK_ENTRY:
-      if (app->main_api.arep != UINT32_MAX)
-      {
-         APP_LOG_INFO (
-            "Writing to logbook. Error_code1: %02X Error_code2: %02X  Entry "
-            "detail: 0x%08X\n",
-            APP_GSDML_LOGBOOK_ERROR_CODE_1,
-            APP_GSDML_LOGBOOK_ERROR_CODE_2,
-            APP_GSDML_LOGBOOK_ENTRY_DETAIL);
-         pnio_status.error_code = APP_GSDML_LOGBOOK_ERROR_CODE;
-         pnio_status.error_decode = APP_GSDML_LOGBOOK_ERROR_DECODE;
-         pnio_status.error_code_1 = APP_GSDML_LOGBOOK_ERROR_CODE_1;
-         pnio_status.error_code_2 = APP_GSDML_LOGBOOK_ERROR_CODE_2;
-         pnet_create_log_book_entry (
-            app->net,
-            app->main_api.arep,
-            &pnio_status,
-            APP_GSDML_LOGBOOK_ENTRY_DETAIL);
-      }
-      else
-      {
-         APP_LOG_WARNING (
-            "Could not add logbook entry as no connection is available\n");
-      }
-      break;
+//    case APP_DEMO_STATE_LOGBOOK_ENTRY:
+//       if (app->main_api.arep != UINT32_MAX)
+//       {
+//          APP_LOG_INFO (
+//             "Writing to logbook. Error_code1: %02X Error_code2: %02X  Entry "
+//             "detail: 0x%08X\n",
+//             APP_GSDML_LOGBOOK_ERROR_CODE_1,
+//             APP_GSDML_LOGBOOK_ERROR_CODE_2,
+//             APP_GSDML_LOGBOOK_ENTRY_DETAIL);
+//          pnio_status.error_code = APP_GSDML_LOGBOOK_ERROR_CODE;
+//          pnio_status.error_decode = APP_GSDML_LOGBOOK_ERROR_DECODE;
+//          pnio_status.error_code_1 = APP_GSDML_LOGBOOK_ERROR_CODE_1;
+//          pnio_status.error_code_2 = APP_GSDML_LOGBOOK_ERROR_CODE_2;
+//          pnet_create_log_book_entry (
+//             app->net,
+//             app->main_api.arep,
+//             &pnio_status,
+//             APP_GSDML_LOGBOOK_ENTRY_DETAIL);
+//       }
+//       else
+//       {
+//          APP_LOG_WARNING (
+//             "Could not add logbook entry as no connection is available\n");
+//       }
+//       break;
 
-   case APP_DEMO_STATE_ABORT_AR:
-      if (app->main_api.arep != UINT32_MAX)
-      {
-         APP_LOG_INFO (
-            "Sample app will disconnect and reconnect. Executing "
-            "pnet_ar_abort()  AREP: %u\n",
-            app->main_api.arep);
-         (void)pnet_ar_abort (app->net, app->main_api.arep);
-      }
-      else
-      {
-         APP_LOG_WARNING (
-            "Could not execute pnet_ar_abort(), as no connection is "
-            "available\n");
-      }
-      break;
-   }
+//    case APP_DEMO_STATE_ABORT_AR:
+//       if (app->main_api.arep != UINT32_MAX)
+//       {
+//          APP_LOG_INFO (
+//             "Sample app will disconnect and reconnect. Executing "
+//             "pnet_ar_abort()  AREP: %u\n",
+//             app->main_api.arep);
+//          (void)pnet_ar_abort (app->net, app->main_api.arep);
+//       }
+//       else
+//       {
+//          APP_LOG_WARNING (
+//             "Could not execute pnet_ar_abort(), as no connection is "
+//             "available\n");
+//       }
+//       break;
+//    }
 
-   switch (app->alarm_demo_state)
-   {
-   case APP_DEMO_STATE_ALARM_SEND:
-      app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_REDUNDANT;
-      break;
-   case APP_DEMO_STATE_CYCLIC_REDUNDANT:
-      app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_NORMAL;
-      break;
-   case APP_DEMO_STATE_CYCLIC_NORMAL:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_ADD;
-      break;
-   case APP_DEMO_STATE_DIAG_STD_ADD:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_UPDATE;
-      break;
-   case APP_DEMO_STATE_DIAG_STD_UPDATE:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_ADD;
-      break;
-   case APP_DEMO_STATE_DIAG_USI_ADD:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_UPDATE;
-      break;
-   case APP_DEMO_STATE_DIAG_USI_UPDATE:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_REMOVE;
-      break;
-   case APP_DEMO_STATE_DIAG_USI_REMOVE:
-      app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_REMOVE;
-      break;
-   case APP_DEMO_STATE_DIAG_STD_REMOVE:
-      app->alarm_demo_state = APP_DEMO_STATE_LOGBOOK_ENTRY;
-      break;
-   case APP_DEMO_STATE_LOGBOOK_ENTRY:
-      app->alarm_demo_state = APP_DEMO_STATE_ABORT_AR;
-      break;
-   default:
-   case APP_DEMO_STATE_ABORT_AR:
-      app->alarm_demo_state = APP_DEMO_STATE_ALARM_SEND;
-      break;
-   }
-}
+//    switch (app->alarm_demo_state)
+//    {
+//    case APP_DEMO_STATE_ALARM_SEND:
+//       app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_REDUNDANT;
+//       break;
+//    case APP_DEMO_STATE_CYCLIC_REDUNDANT:
+//       app->alarm_demo_state = APP_DEMO_STATE_CYCLIC_NORMAL;
+//       break;
+//    case APP_DEMO_STATE_CYCLIC_NORMAL:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_ADD;
+//       break;
+//    case APP_DEMO_STATE_DIAG_STD_ADD:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_UPDATE;
+//       break;
+//    case APP_DEMO_STATE_DIAG_STD_UPDATE:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_ADD;
+//       break;
+//    case APP_DEMO_STATE_DIAG_USI_ADD:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_UPDATE;
+//       break;
+//    case APP_DEMO_STATE_DIAG_USI_UPDATE:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_USI_REMOVE;
+//       break;
+//    case APP_DEMO_STATE_DIAG_USI_REMOVE:
+//       app->alarm_demo_state = APP_DEMO_STATE_DIAG_STD_REMOVE;
+//       break;
+//    case APP_DEMO_STATE_DIAG_STD_REMOVE:
+//       app->alarm_demo_state = APP_DEMO_STATE_LOGBOOK_ENTRY;
+//       break;
+//    case APP_DEMO_STATE_LOGBOOK_ENTRY:
+//       app->alarm_demo_state = APP_DEMO_STATE_ABORT_AR;
+//       break;
+//    default:
+//    case APP_DEMO_STATE_ABORT_AR:
+//       app->alarm_demo_state = APP_DEMO_STATE_ALARM_SEND;
+//       break;
+//    }
+// }
 
 //sampleapp中各个回调函数的配置,若为optional可配置为null
 void app_pnet_cfg_init_default (pnet_cfg_t * pnet_cfg)
@@ -1665,8 +1667,8 @@ static void update_button_states (app_data_t * app)
    app->buttons_tick_counter++;
    if (app->buttons_tick_counter > APP_TICKS_READ_BUTTONS)
    {
-      app->button1_pressed = app_get_button (0);
-      app->button2_pressed = app_get_button (1);
+      //app->button1_pressed = app_get_button (0);
+      //app->button2_pressed = app_get_button (1);
       app->buttons_tick_counter = 0;
    }
 }
@@ -1680,7 +1682,7 @@ void app_loop_forever (void * arg)
 
    app->main_api.arep = UINT32_MAX;
 
-   app_set_led (APP_DATA_LED_ID, false);
+   //app_set_led (APP_DATA_LED_ID, false);
    app_plug_dap (app, app->pnet_cfg->num_physical_ports);
    APP_LOG_INFO ("[%s]Waiting for PLC connect request\n\n", getNowTime() );
 
@@ -1714,13 +1716,13 @@ void app_loop_forever (void * arg)
          }
 
          /* Run alarm demo function if button2 is pressed */
-         if (
-            (app->button2_pressed == true) &&
-            (app->button2_pressed_previous == false))
-         {
-            app_handle_demo_pnet_api (app);
-         }
-         app->button2_pressed_previous = app->button2_pressed;
+         // if (
+         //    (app->button2_pressed == true) &&
+         //    (app->button2_pressed_previous == false))
+         // {
+         //    app_handle_demo_pnet_api (app);
+         // }
+         // app->button2_pressed_previous = app->button2_pressed;
 
          /* Run p-net stack */
          pnet_handle_periodic (app->net);

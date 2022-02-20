@@ -53,16 +53,16 @@ extern uint8_t * pSHMMapAddr;
  *
  * @param led_state        In:    New LED state
  */
-static void app_handle_data_led_state (bool led_state)
-{
-   static bool previous_led_state = false;
+// static void app_handle_data_led_state (bool led_state)
+// {
+//    static bool previous_led_state = false;
 
-   if (led_state != previous_led_state)
-   {
-      app_set_led (APP_DATA_LED_ID, led_state);
-   }
-   previous_led_state = led_state;
-}
+//    if (led_state != previous_led_state)
+//    {
+//       app_set_led (APP_DATA_LED_ID, led_state);
+//    }
+//    previous_led_state = led_state;
+// }
 
 /* ***************************************************
  * 【重要】为所有插槽处的 submod 提供Input数据
@@ -160,11 +160,11 @@ int app_data_set_output_data (
    if( submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_OUT ||
        submodule_id == APP_GSDML_SUBMOD_ID_DIGITAL_IN_OUT )
    {
-      bool led_state;
+      //bool led_state;
 
       memcpy (outputdata, data, size);
-      led_state = (outputdata[0] & 0x80) > 0;
-      app_handle_data_led_state (led_state);
+      //led_state = (outputdata[0] & 0x80) > 0;
+      //app_handle_data_led_state (led_state);
       return 0;      
    }
    /* ==========================================================================
@@ -192,7 +192,7 @@ int app_data_set_output_data (
 int app_data_set_default_outputs (void)
 {
    outputdata[0] = APP_DATA_DEFAULT_OUTPUT_DATA;
-   app_handle_data_led_state (false);
+   //app_handle_data_led_state (false);
    return 0;
 }
 

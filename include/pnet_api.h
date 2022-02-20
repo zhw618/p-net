@@ -1224,7 +1224,7 @@ typedef struct pnet_cfg
    pnet_alarm_cnf alarm_cnf_cb;
    pnet_alarm_ack_cnf alarm_ack_cnf_cb;
    pnet_reset_ind reset_cb;
-   pnet_signal_led_ind signal_led_cb;
+   pnet_signal_led_ind signal_led_cb;  /*指示led信号灯用*/
    void * cb_arg; /* Userdata passed to callbacks, not used by stack */
 
    /** I&M initial data */
